@@ -1,0 +1,17 @@
+python ./RT-DETRv2-repo/rtdetrv2_pytorch/tools/train.py -c ./RT-DETRv2-repo/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_tarot.yml --use-amp --seed=0 -t ./RT-DETRv2-repo/rtdetrv2_pytorch/rtdetrv2_r18vd_120e_coco_rerun_48.1.pth
+
+我刪除了所以 rtdetr (第一版)的資料夾
+我刪掉了 .devcontainer, .vscode, .github
+
+
+完整訓練流程 ->
+用影印機掃描所有塔羅牌，並存在 ./TarotScanAll/TarotScan 中，接下來利用 ./TarotScanAll/FixYImage.py 進行顏色修正
+用 Blender 進行反光模擬，每張塔羅牌 sample 20 張不同角度與反光程度的圖片，並將圖片放在 ./TarotScanS 當中 (./TarotScanS 檔案太大，我已將將其刪除)
+用 ./TarotDataGenerator.py 以 ./TarotScanS 為素材，生成模擬塔羅的訓練資料 10000 張 (模擬手機拍攝的場景)
+用 ./convert_yolo_to_coco.py 來將訓練資料轉換成 coco 的格式
+下載 rtdetrv2_r18vd_120e_coco_rerun_48.1.pth 模型，並丟到 ./RT-DETRv2-repo/rtdetrv2_pytorch/rtdetrv2_r18vd_120e_coco_rerun_48.1.pth 當中
+*注意: ./RT-DETRv2-repo/rtdetrv2_pytorch/configs/dataset/tarot_detection.yml  是 data 資訊，label 數量有變時需要動這
+*注意: ./RT-DETRv2-repo/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_tarot.yml  是 model 資訊
+*注意: ./RT-DETRv2-repo/rtdetrv2_pytorch/configs/runtime.yml  訓練設定，應該不用去動他
+運行: python ./RT-DETRv2-repo/rtdetrv2_pytorch/tools/train.py -c ./RT-DETRv2-repo/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_tarot.yml --use-amp --seed=0 -t ./RT-DETRv2-repo/rtdetrv2_pytorch/rtdetrv2_r18vd_120e_coco_rerun_48.1.pth
+執行訓練後，model 會存在 output 中

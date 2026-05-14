@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina Cam - 高質感相機</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Viewport -->
+        <div class="viewfinder-container">
+            <video id="video" autoplay playsinline></video>
+            <div class="shutter-flash" id="flash"></div>
+            
+            <!-- UI Overlays -->
+            <div class="top-bar">
+                <div class="status-indicator">
+                    <span class="dot"></span>
+                    <span id="status-text">相機就緒</span>
+                </div>
+            </div>
+
+            <div class="bottom-controls">
+                <div class="gallery-preview" id="gallery-trigger">
+                    <img id="last-shot" src="" alt="藝廊" style="display: none;">
+                    <div class="placeholder-icon"></div>
+                </div>
+                
+                <button id="capture-btn" class="capture-button">
+                    <div class="inner-circle"></div>
+                </button>
+
+                <div class="settings-trigger">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden Canvas for Capture -->
+        <canvas id="canvas" style="display: none;"></canvas>
+        
+        <!-- Fallback for Non-HTTPS (System Camera) -->
+        <input type="file" accept="image/*" capture="camera" id="camera-input" style="display: none;">
+
+        <!-- Full Gallery Overlay -->
+        <div id="gallery-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>藝廊</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div id="gallery-grid" class="gallery-grid">
+                    <!-- Photos will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
