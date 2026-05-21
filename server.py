@@ -5,6 +5,7 @@ import base64
 import json
 from datetime import datetime
 import torch
+from Gemini import LLM_run
 
 from Inference import load_model, load_image_from_path, run_model
 
@@ -14,7 +15,7 @@ DIRECTORY = "captures"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 config_path = "./RT-DETRv2-repo/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_tarot.yml"
-model_path = "./output/rtdetrv2_r18vd_120e_tarot/checkpoint0016.pth"
+model_path = "./output/rtdetrv2_r18vd_120e_tarot/RT-DETRv2_for_tarot.pth"
 output_dir = "./inference_result"
 
 model = load_model(model_path, config_path, device)
@@ -48,6 +49,20 @@ class UploadHandler(http.server.SimpleHTTPRequestHandler):
 
             image_path = filepath
             run_model(model, image_path, output_dir)
+            get_cards = run_model(model, filepath, output_dir)
+
+            label_file = "./label.json"
+            with open(label_file, "r", encoding="utf-8") as f:
+                label = json.load(f)
+
+            card_info = []
+            for i, card in enumerate(get_cards):
+                card_info.append({"name":label[card[1]]["ch-TW"],
+                                "meaning":label[card[1]].get('meaning', 'null')})
+
+
+            user_input = "今天運勢如何"
+            LLM_run(card_info, user_input)
         else:
             super().do_POST()
 

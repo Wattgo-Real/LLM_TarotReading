@@ -55,7 +55,7 @@ def get_results(image, labels, boxes, scores, class_names, font_size = 20, thres
         # Draw box
         draw.rectangle(b, outline="red", width=3)
         # Draw label
-        text = f"{class_names[label_name]["ch-TW"]} {score:.2f}"
+        text = f"{class_names[label_name]['ch-TW']} {score:.2f}"
         draw.text((b[0], b[1] - 100), text, fill="red", font=font)
 
     get_card = sorted(get_card, key=lambda x: x[0])

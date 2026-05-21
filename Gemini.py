@@ -117,7 +117,7 @@ def LLM_run(card_info, user_input):
     )
 
     print("\n初始化塔羅 AI 占卜師中...")
-    chat = client.chats.create(model="gemini-2.5-flash", config=config)
+    chat = client.chats.create(model="gemini-3.5-flash", config=config)
 
     print("\n=====================================================")
     print(f"占卜師：你好！你抽到了「{card_info[0]['name']}」「{card_info[1]['name']}」「{card_info[2]['name']}")
