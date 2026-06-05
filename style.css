@@ -19,6 +19,7 @@ body {
     color: var(--text);
     overflow: hidden;
     height: 100vh;
+    height: 100dvh;
     width: 100vw;
 }
 
@@ -107,12 +108,12 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 140px;
+    height: 100px;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    padding: 0 20px 20px 20px;
+    justify-content: space-between;
+    padding: 0 30px 10px 30px;
     z-index: 5;
 }
 
@@ -238,4 +239,217 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+/* Tarot Extensions */
+.tarot-overlay {
+    position: absolute;
+    top: 70px; /* Below the top bar */
+    left: 0;
+    width: 100%;
+    padding: 0 20px;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+}
+
+.question-box {
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 16px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.settings-bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    user-select: none;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.toggle-item input[type="checkbox"] {
+    position: relative;
+    width: 36px;
+    height: 18px;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: 1px solid var(--glass-border);
+}
+
+.toggle-item input[type="checkbox"]:checked {
+    background: var(--accent);
+}
+
+.toggle-item input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.3s;
+}
+
+.toggle-item input[type="checkbox"]:checked::before {
+    transform: translateX(18px);
+}
+
+.toggle-item input[type="checkbox"]:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.toggle-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
+#question-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    resize: none;
+    outline: none;
+    margin-bottom: 12px;
+    font-family: inherit;
+}
+
+#question-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.glass-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    min-width: 80px;
+    background: var(--glass);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.glass-btn.primary {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.glass-btn.primary:hover {
+    background: #4f46e5; /* darker primary */
+}
+
+/* Result Modal specific */
+.result-content {
+    width: 90%;
+    max-width: 600px;
+    margin: 10vh auto; /* 上下留白 10vh，左右置中 */
+    height: 80vh;
+    height: 80dvh;
+    background: rgba(15, 23, 42, 0.85); /* Slightly darker for readability */
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+}
+
+.result-text-area {
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-y: auto;
+    flex: 1;
+    white-space: pre-wrap;
+    border: 1px solid var(--glass-border);
+}
+
+.close-result {
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+}
+
+/* Compatibility Mode Placeholder Styling */
+.compat-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+    border: 2px dashed var(--glass-border);
+    border-radius: 20px;
+    margin: 20px;
+    max-width: 90%;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.compat-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.compat-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fbbf24; /* Amber color to highlight warning/status */
+    margin-bottom: 10px;
+}
+
+.compat-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
 }

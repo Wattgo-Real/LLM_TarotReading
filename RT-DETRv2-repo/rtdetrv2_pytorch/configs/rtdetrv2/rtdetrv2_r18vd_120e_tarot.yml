@@ -7,7 +7,7 @@ __include__: [
 ]
 
 
-output_dir: ./output/rtdetrv2_r18vd_120e_tarot
+output_dir: ./output/OldModel
 
 
 PResNet:
@@ -27,7 +27,7 @@ RTDETRTransformerv2:
   num_layers: 3
 
 
-epoches: 120 
+epoches: 10 
 
 optimizer:
   type: AdamW

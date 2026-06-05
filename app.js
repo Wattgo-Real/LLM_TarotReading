@@ -2,13 +2,21 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const captureBtn = document.getElementById('capture-btn');
 const flash = document.getElementById('flash');
-const lastShotPreview = document.getElementById('last-shot');
-const galleryTrigger = document.getElementById('gallery-trigger');
-const galleryModal = document.getElementById('gallery-modal');
-const closeModal = document.querySelector('.close');
-const galleryGrid = document.getElementById('gallery-grid');
 const statusText = document.getElementById('status-text');
 const cameraInput = document.getElementById('camera-input');
+
+// Tarot variables
+const questionInput = document.getElementById('question-input');
+const sendQuestionBtn = document.getElementById('send-question-btn');
+const viewResultBtn = document.getElementById('view-result-btn');
+const resultModal = document.getElementById('result-modal');
+const closeResult = document.querySelector('.close-result');
+const resultText = document.getElementById('result-text');
+
+// Settings toggles
+const useSelfModelToggle = document.getElementById('use-self-model-toggle');
+const useSplitInferenceToggle = document.getElementById('use-split-inference-toggle');
+const useSplitInferenceLabel = document.getElementById('use-split-inference-label');
 
 let capturedPhotos = [];
 let isCompatibilityMode = false;
@@ -42,12 +50,10 @@ function switchToCompatibilityMode(msg) {
     statusText.innerText = msg;
     statusText.style.color = '#fbbf24'; // Amber
     video.style.display = 'none';
-    
-    // Show a placeholder in the viewfinder
-    const viewfinder = document.querySelector('.viewfinder-container');
-    const msgEl = document.createElement('div');
-    msgEl.innerHTML = '<p style="text-align:center; padding:20px;">點擊下方快門按鈕<br>啟動手機內建相機</p>';
-    viewfinder.appendChild(msgEl);
+    const placeholder = document.getElementById('compatibility-placeholder');
+    if (placeholder) {
+        placeholder.style.display = 'flex';
+    }
 }
 
 // Handle System Camera Input
@@ -90,15 +96,6 @@ async function processCapturedImage(imageData) {
     // Save to local list
     capturedPhotos.push(imageData);
     
-    // Update preview
-    lastShotPreview.src = imageData;
-    lastShotPreview.style.display = 'block';
-    const placeholder = document.querySelector('.placeholder-icon');
-    if (placeholder) placeholder.style.display = 'none';
-
-    // Add to gallery
-    addToGallery(imageData);
-
     // Upload to Server
     await uploadToServer(imageData);
 }
@@ -130,31 +127,112 @@ async function uploadToServer(dataUrl) {
     }
 }
 
-function addToGallery(dataUrl) {
-    const item = document.createElement('div');
-    item.className = 'gallery-item';
-    const img = document.createElement('img');
-    img.src = dataUrl;
-    item.appendChild(img);
-    galleryGrid.prepend(item);
-}
-
 // Event Listeners
 captureBtn.addEventListener('click', capturePhoto);
 
-galleryTrigger.addEventListener('click', () => {
-    galleryModal.style.display = 'block';
+// Tarot Event Listeners
+sendQuestionBtn.addEventListener('click', async () => {
+    const question = questionInput.value.trim();
+    if (!question) {
+        alert("請先輸入問題！");
+        return;
+    }
+    statusText.innerText = '正在傳送問題...';
+    statusText.style.color = '#fbbf24';
+    try {
+        const response = await fetch('/question', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ question: question })
+        });
+        const result = await response.json();
+        if (result.status === 'success') {
+            statusText.innerText = '問題已送出！';
+            statusText.style.color = '#10b981';
+        } else {
+            throw new Error('Failed to send question');
+        }
+    } catch (err) {
+        console.error(err);
+        statusText.innerText = '傳送問題失敗';
+        statusText.style.color = '#ef4444';
+    }
 });
 
-closeModal.addEventListener('click', () => {
-    galleryModal.style.display = 'none';
+viewResultBtn.addEventListener('click', async () => {
+    resultModal.style.display = 'block';
+    resultText.innerText = '正在獲取解答，請稍候...';
+    try {
+        const response = await fetch('/result?t=' + Date.now());
+        const data = await response.json();
+        if (data.status === 'success') {
+            resultText.innerText = data.data;
+        } else {
+            resultText.innerText = '解答尚未產生，請稍後再試。';
+        }
+    } catch (err) {
+        console.error(err);
+        resultText.innerText = '無法連線到伺服器獲取解答。';
+    }
+});
+
+closeResult.addEventListener('click', () => {
+    resultModal.style.display = 'none';
 });
 
 window.onclick = (event) => {
-    if (event.target == galleryModal) {
-        galleryModal.style.display = 'none';
+    if (event.target == resultModal) {
+        resultModal.style.display = 'none';
     }
 };
 
+// Settings Sync
+async function initSettings() {
+    try {
+        const response = await fetch('/settings?t=' + Date.now());
+        const data = await response.json();
+        
+        useSelfModelToggle.checked = !!data.use_self_model;
+        useSplitInferenceToggle.checked = !!data.use_split_inference;
+        
+        updateToggleStates();
+    } catch (err) {
+        console.error("Failed to load settings:", err);
+    }
+}
+
+function updateToggleStates() {
+    const isSelfModelEnabled = useSelfModelToggle.checked;
+    
+    if (!isSelfModelEnabled) {
+        useSplitInferenceToggle.disabled = true;
+        useSplitInferenceToggle.checked = false;
+        useSplitInferenceLabel.classList.add('disabled');
+    } else {
+        useSplitInferenceToggle.disabled = false;
+        useSplitInferenceLabel.classList.remove('disabled');
+    }
+}
+
+async function saveSettings() {
+    updateToggleStates();
+    try {
+        await fetch('/settings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                use_self_model: useSelfModelToggle.checked,
+                use_split_inference: useSplitInferenceToggle.checked
+            })
+        });
+    } catch (err) {
+        console.error("Failed to save settings:", err);
+    }
+}
+
+useSelfModelToggle.addEventListener('change', saveSettings);
+useSplitInferenceToggle.addEventListener('change', saveSettings);
+
 // Start the app
 initCamera();
+initSettings();

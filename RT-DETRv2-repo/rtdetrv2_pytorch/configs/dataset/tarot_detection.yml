@@ -12,8 +12,8 @@ train_dataloader:
   type: DataLoader
   dataset: 
     type: CocoDetection
-    img_folder: ./coco_tarot/images/train/
-    ann_file: ./coco_tarot/annotations/instances_train.json
+    img_folder: C:/Users/User/Desktop/TarotTrainingData/coco_tarot/images/train/
+    ann_file: C:/Users/User/Desktop/TarotTrainingData/coco_tarot/annotations/instances_train.json
     return_masks: False
     transforms:
       type: Compose
@@ -29,8 +29,8 @@ val_dataloader:
   type: DataLoader
   dataset: 
     type: CocoDetection
-    img_folder: ./coco_tarot/images/val/
-    ann_file: ./coco_tarot/annotations/instances_val.json
+    img_folder: C:/Users/User/Desktop/TarotTrainingData/coco_tarot/images/val/
+    ann_file: C:/Users/User/Desktop/TarotTrainingData/coco_tarot/annotations/instances_val.json
     return_masks: False
     transforms:
       type: Compose

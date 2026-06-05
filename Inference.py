@@ -7,7 +7,7 @@ from torchvision.ops import nms
 
 import random
 import glob
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import json
 
 font = ImageFont.truetype("msjh.ttc", 24)
@@ -98,7 +98,14 @@ def draw_results_old(image, labels, boxes, scores, class_names, font_size = 20, 
 def load_image_from_path(selected_image_path):
     filename_extension = selected_image_path.rsplit(".")[-1]
     if filename_extension in ["jpg","jpeg","png"]:
-        return Image.open(selected_image_path).convert("RGB")
+        image = Image.open(selected_image_path).convert("RGB")
+        image = ImageOps.exif_transpose(image)
+
+        width, height = image.size
+        if height > width:
+            image = image.rotate(90, expand=True)
+
+        return image
     elif filename_extension in ["HEIC"]:
         try:
             import pillow_heif
@@ -108,7 +115,7 @@ def load_image_from_path(selected_image_path):
         heif_file = pillow_heif.read_heif(selected_image_path)
         return Image.frombytes(heif_file.mode, heif_file.size, heif_file.data, "raw")
 
-def load_model(model_path, config_path, device):
+def load_rt_detr_model(model_path, config_path, device):
     cfg = YAMLConfig(config_path, resume=model_path)
     
     checkpoint = torch.load(model_path, map_location="cpu")
@@ -133,7 +140,7 @@ def load_model(model_path, config_path, device):
     model.eval()
     return model
 
-def run_model(model, image_path, output_dir):
+def run_rt_detr_model(model, image_path, output_dir):
     im_pil = load_image_from_path(image_path)
     output_path = os.path.join(output_dir, os.path.basename(image_path).rsplit(".",1)[0]+".png") 
 
@@ -152,7 +159,7 @@ def run_model(model, image_path, output_dir):
 
     # 5. Visualize
     class_names = get_class_names()
-    result_img, get_card = get_results(im_pil, labels, boxes, scores, class_names, font_size = w//50, threshold=0.6)
+    result_img, get_card = get_results(im_pil, labels, boxes, scores, class_names, font_size = w//50, threshold=0.8)
 
     # prompt = f"""
     # 請你當一位塔羅牌解讀大師，為我解讀這張牌卡
@@ -174,16 +181,15 @@ def run_model(model, image_path, output_dir):
 if __name__ == "__main__":
 
     config_path = "./RT-DETRv2-repo/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_tarot.yml"
-    model_path = "./output/rtdetrv2_r18vd_120e_tarot/checkpoint0016.pth"
-    image_dir = "./captures"
-    output_dir = "./inference_result"
+    model_path = "./output/OldModel/checkpoint0006.pth"
+    #model_path = "./output/NewModel/checkpoint0006.pth"
+    image_dir = "./Data/TestImg"
+    output_dir = "./Results/inference_result"
 
-    model = load_model(model_path, config_path, device)
+    model = load_rt_detr_model(model_path, config_path, device)
 
     image_path_list = os.listdir(image_dir)
     for image_path in image_path_list:
         full_image_path = os.path.join(image_dir, image_path) 
-        run_model(model, full_image_path, output_dir)
+        run_rt_detr_model(model, full_image_path, output_dir)
         
-    # 1. Load config and model
-    
