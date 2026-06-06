@@ -53,10 +53,20 @@ def get_results(image, labels, boxes, scores, class_names, font_size = 20, thres
         score = scrs[i].item()
         
         # Draw box
-        draw.rectangle(b, outline="red", width=3)
+        draw.rectangle(b, outline="#00FF00", width=2)
         # Draw label
         text = f"{class_names[label_name]['ch-TW']} {score:.2f}"
-        draw.text((b[0], b[1] - 100), text, fill="red", font=font)
+        try:
+            left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
+            text_w = right - left
+            text_h = bottom - top
+        except AttributeError:
+            text_w, text_h = draw.textsize(text, font=font)
+        
+        n = 20
+        bg_coords = [b[0], b[1] - text_h - n - 8, b[0] + text_w + n + 12, b[1]]
+        draw.rectangle(bg_coords, fill="#00FF00")
+        draw.text((b[0] + n, b[1] - text_h - n), text, fill="black", font=font)
 
     get_card = sorted(get_card, key=lambda x: x[0])
     return image, get_card
@@ -87,10 +97,19 @@ def draw_results_old(image, labels, boxes, scores, class_names, font_size = 20, 
         score = scrs[i].item()
         
         # Draw box
-        draw.rectangle(b, outline="red", width=3)
+        draw.rectangle(b, outline="#00FF00", width=2)
         # Draw label
         text = f"{label_name} {score:.2f}"
-        draw.text((b[0], b[1] - 100), text, fill="red", font=font)
+        try:
+            left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
+            text_w = right - left
+            text_h = bottom - top
+        except AttributeError:
+            text_w, text_h = draw.textsize(text, font=font)
+        
+        bg_coords = [b[0], b[1] - text_h - 16, b[0] + text_w + 16, b[1]]
+        draw.rectangle(bg_coords, fill="#00FF00")
+        draw.text((b[0] + 8, b[1] - text_h - 8), text, fill="black", font=font)
 
     return image
 
@@ -181,8 +200,8 @@ def run_rt_detr_model(model, image_path, output_dir):
 if __name__ == "__main__":
 
     config_path = "./RT-DETRv2-repo/rtdetrv2_pytorch/configs/rtdetrv2/rtdetrv2_r18vd_120e_tarot.yml"
-    model_path = "./output/OldModel/checkpoint0006.pth"
-    #model_path = "./output/NewModel/checkpoint0006.pth"
+    #model_path = "./output/OldModel/checkpoint0006.pth"
+    model_path = "./output/NewModel/checkpoint0006.pth"
     image_dir = "./Data/TestImg"
     output_dir = "./Results/inference_result"
 
