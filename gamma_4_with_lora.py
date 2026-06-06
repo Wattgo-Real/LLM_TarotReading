@@ -26,6 +26,20 @@ def clean_response(text: str) -> str:
     text = re.sub(r'<start_of_turn>', '', text)
     for pattern in [r'\nThe answer was.*', r'\nAnswer:.*', r'\n<start_of']:
         text = re.sub(pattern, '', text, flags=re.DOTALL)
+        
+    # 偵測重複行並從該處截斷（容許同一行重複出現最多2次，第3次出現時才截斷）
+    lines = text.split('\n')
+    line_counts = {}
+    cleaned_lines = []
+    for line in lines:
+        stripped_line = line.strip()
+        if stripped_line:
+            line_counts[stripped_line] = line_counts.get(stripped_line, 0) + 1
+            if line_counts[stripped_line] > 2:
+                break
+        cleaned_lines.append(line)
+    
+    text = '\n'.join(cleaned_lines)
     return text.strip()
 
 
